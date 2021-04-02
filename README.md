@@ -141,6 +141,142 @@ git commit
 git push origin dev -  sends changes to dev branch
 
 
+DEV BRANCH CREATED
+
+
+
 app.py
 ---
 import g
+
+# ===========================================================================
+# MIDDLEWARE OPENING AND CLOSING DB CONNECTIONS EVERYTIME A REQUEST IS SENT TO OUR SERVER
+# ===========================================================================
+# decorator that fires before any db requests
+@app.before_request
+def before_request():
+    '''
+    connect to the db before each request
+    '''
+    print('before request')
+    # creating new global variable called db which is = to our PostgreSQL db
+    g.db = models.DATABASE
+    # making connection to our db
+    g.db.connect()
+
+
+# decorator that closes db connection after requests
+@app.after_request
+def after_request(response):
+    '''
+    close connection to the db after each request
+    '''
+    print('after request')
+    g.db.close()
+    # pass the server response to the front-end from server after db conneciton is closed
+    return response
+# ===========================================================================
+# END MIDDLEWARE
+# ===========================================================================
+
+test route in browser to see if db connection and 
+
+
+in root of project
+$ mkdir resources
+# package directory, dont touch it
+$ touch resources/__init__.py
+# our controller
+$ touch resources/homes.py
+
+homes.py
+---
+import models
+
+# blueprint records the operations helps execute. records the operation and helps execute them when registered on the application.
+from flask import Blueprint, jsonify, request
+
+# allows python data to be interpreted correctly
+from playhouse.shortcuts import model_to_dict
+
+# configure this blueprint
+
+#first arg is the blueprint name
+#second arg is the import name
+#third arg is the url_prefix
+home = Blueprint('homes', 'home')
+---
+
+app.py
+---
+# external
+from flask_cors import CORS
+# internal
+from resources.homes import home
+
+# after middleware...
+# ===========================================================================
+# CORS Configuration
+# ===========================================================================
+# arguments home being imported from resources, define origins which we will allow to make the request, and support_credentials allows us to pass credentials
+
+CORS(home, origins=['http://localhost:3000'], supports_credentials=True)
+
+app.register_blueprint(home, url_prefix='/api/v1/homes')
+# ===========================================================================
+# End CORS 
+# ===========================================================================
+
+
+resources > homes.py
+---
+# create index route here, try / catch, if it works provide us with the list of homes 
+@home.route('/', methods=['GET'])
+def get_all_homes():
+    try:
+        homes = [model_to_dict(home) for home in models.Homes.select()]
+        print(homes)
+        return jsonify(data=homes, status={"code": 200, "message": "success"})
+    except models.DoesNotExist:
+        return jsonify(data={}, status={"code": 401, "message":"Error getting the resources"})
+
+---
+
+test in postman or in browser
+GET localhost:8000/api/v1/homes
+
+
+
+
+resources > homes.py
+---
+
+@home.route('/', methods=['POST'])
+def create_homes():
+    # get_json turns json out of a request and turns into python data
+    payload = request.get_json()
+    # should print a dictionary
+    print(type(payload), 'payload')
+    # spread operator being used
+    home = models.Homes.create(**payload)
+    # print the dictionary version of the model version of the Home instance
+    print(home.__dict__)
+    # look at all the methods
+    print(dir(home))
+    #change the model into a dictionary
+    print(model_to_dict(home), 'model to dictionary')
+    home_dict = model_to_dict(home)
+    return jsonify(data=home_dict, status={"code": 201, "message":"Successful home creation"})
+---
+test in postman or curl
+
+POST localhost:8000/api/v1/homes/
+Body > raw > JSON
+{
+    "bedrooms":"5",
+    "bathrooms":"3",
+    "sq_ft":"500",
+    "price":"$250,000"
+}
+
+test GET request to ensure we see the POSTED home

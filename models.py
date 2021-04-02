@@ -9,7 +9,7 @@ DATABASE = PostgresqlDatabase('homes')
 
 #Extend peewees Model class and add our own logic/schema on top of it to create our DB schema
 class Homes(Model):
-    bedrooms = CharField()
+    bedrooms = CharField(null=False)
     bathrooms = CharField()
     sq_ft = CharField()
     price = CharField()
