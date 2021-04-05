@@ -2,10 +2,17 @@
 from peewee import *
 # part of base python language
 from datetime import datetime 
+#importing config variables from hosted heroku database
+
+
 
 # global variable referencing local database
 # http://docs.peewee-orm.com/en/latest/peewee/database.html#initializing-a-database
-DATABASE = PostgresqlDatabase('homes')
+DATABASE = PostgresqlDatabase(
+    'dbnnt65aol8afg',  # Required by Peewee.
+    user='jbiqmolkxjkyzy',  # Will be passed directly to psycopg2.
+    password='1dd25d55268ad8e2292792dd9d0de144b70603b4eb6fc07782f70f9c3a8ee08d',  
+    host='ec2-18-233-83-165.compute-1.amazonaws.com')  
 
 #Extend peewees Model class and add our own logic/schema on top of it to create our DB schema
 class Homes(Model):
