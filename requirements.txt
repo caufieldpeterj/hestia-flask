@@ -5,6 +5,8 @@ Flask==1.1.2
 Flask-Bcrypt==0.7.1
 Flask-Cors==3.0.10
 Flask-Login==0.5.0
+greenlet==1.0.0
+gunicorn==20.1.0
 itsdangerous==1.1.0
 Jinja2==2.11.3
 MarkupSafe==1.1.1
@@ -12,4 +14,5 @@ peewee==3.14.4
 psycopg2-binary==2.8.6
 pycparser==2.20
 six==1.15.0
+SQLAlchemy==1.4.5
 Werkzeug==1.0.1
