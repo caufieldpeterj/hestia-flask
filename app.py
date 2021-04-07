@@ -1,18 +1,19 @@
-# ===========================================================================
+# ====================================
 # External Packages
-# ===========================================================================
+# ====================================
+import os
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 
-# ===========================================================================
+# ====================================
 # Internal Imports
-# ===========================================================================
+# ====================================
 import models
 from resources.homes import home
 
-# ===========================================================================
+# ====================================
 # Configuration
-# ===========================================================================
+# ====================================
 # Specifies production environment
 DEBUG=True
 # 8000 or 5000 are common python ports
@@ -20,10 +21,9 @@ PORT=8000
 # create the glue for our app, everything will stick to our app variable as it is an instance of our files
 app = Flask(__name__)
 
-
-# ===========================================================================
+# ====================================
 # MIDDLEWARE OPENING AND CLOSING DB CONNECTIONS EVERYTIME A REQUEST IS SENT TO OUR SERVER
-# ===========================================================================
+# ====================================
 # decorator that fires before any db requests
 @app.before_request
 def before_request():
@@ -47,29 +47,28 @@ def after_request(response):
     g.db.close()
     # pass the server response to the front-end from server after db connection is closed
     return response
-# ===========================================================================
+# ====================================
 # END MIDDLEWARE
-# ===========================================================================
+# ====================================
 
-
-# ===========================================================================
+# ====================================
 # CORS Configuration
-# ===========================================================================
+# ====================================
 # arguments home being imported from resources, define origins which we will allow to make the request, and support_credentials allows us to pass credentials
 
 CORS(home, origins=['http://localhost:3000'], supports_credentials=True)
 
 app.register_blueprint(home, url_prefix='/api/v1/homes')
-# ===========================================================================
+# ====================================
 # End CORS 
-# ===========================================================================
+# ====================================
 
 
 
 
-# ===========================================================================
+# ====================================
 # ROUTES
-# ===========================================================================
+# ====================================
 # decorator references app, our flask application instance, which glues the function below to flask server
 @app.route('/seed')
 def seed(): 
@@ -84,6 +83,10 @@ def seed():
 def hello(name):
     return f'Hello {name}'
 
+# we need to initialize the tables in production too
+if 'ON_HEROKU' in os.environ: 
+    print('\non heroku!')
+    models.initialize()
 
 # a filter that only runs when we run a command external to Python and invoke it this way. we are controlling how this file gets run in this environment 
 if __name__ == '__main__':
