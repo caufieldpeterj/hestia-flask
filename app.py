@@ -1,19 +1,22 @@
-# external package imports
+# ===========================================================================
+# External Packages
+# ===========================================================================
 from flask import Flask, jsonify, g
-# import CORS
 from flask_cors import CORS
 
-# internal imports
+# ===========================================================================
+# Internal Imports
+# ===========================================================================
 import models
-# import logic from dogs resources logic
 from resources.homes import home
 
-# telling flask we are running this in a production environment
+# ===========================================================================
+# Configuration
+# ===========================================================================
+# Specifies production environment
 DEBUG=True
-
-# 8000 or 5000 are the common python ports
+# 8000 or 5000 are common python ports
 PORT=8000
-
 # create the glue for our app, everything will stick to our app variable as it is an instance of our files
 app = Flask(__name__)
 
@@ -27,7 +30,7 @@ def before_request():
     '''
     connect to the db before each request
     '''
-    print('before request')
+    print('=======Before Request=======')
     # creating new global variable called db which is = to our PostgreSQL db
     g.db = models.DATABASE
     # making connection to our db
@@ -40,9 +43,9 @@ def after_request(response):
     '''
     close connection to the db after each request
     '''
-    print('after request')
+    print('=======After Request=======')
     g.db.close()
-    # pass the server response to the front-end from server after db conneciton is closed
+    # pass the server response to the front-end from server after db connection is closed
     return response
 # ===========================================================================
 # END MIDDLEWARE
@@ -63,30 +66,26 @@ app.register_blueprint(home, url_prefix='/api/v1/homes')
 
 
 
-#decorator references app, our flask application instance, which glues the function below to flask server
-@app.route('/')
-def index(): 
-    return 'howdy partner'
 
-@app.route('/test')
-def test(): 
-    my_list = ['I', 'cant', 'wait']
-    # return jsonify(my_list)
-    # ALWAYS WRAP RETURN IN JSONIFY
-    # formatS into a json object, web standard for sending data back and forth, things are in the format that you know your front and expects.
-    return jsonify(name="Peter", fav_language='Python')
+# ===========================================================================
+# ROUTES
+# ===========================================================================
+# decorator references app, our flask application instance, which glues the function below to flask server
+@app.route('/seed')
+def seed(): 
+    # ==========ALWAYS WRAP RETURN IN JSONIFY===============
+    # web standard for sending data, front-end is expecting JSON
+    print('SEEDING THE DB')
+    return jsonify(what='dummy data goes here')
 
-
-# So syntax is we are adding you're telling flask hey this route is going to listen to anything after the slash and we're going to call it name.
-# And so that is what flask will do classical convert anything after the smash bros We then this decorator will pass the parameter name.
-# down into our function below, so we have to have the grammar there and then we can use it in our function like any other friend so here's the syntax for adding a.
+# So syntax is we are adding you're telling flask hey this route is going to listen to anything after the slash and we're going to call it name passing the parameter name down into our function below
 
 @app.route('/sayhi/<name>')
 def hello(name):
     return f'Hello {name}'
 
 
-# a filter that only runss when we run a command external to Python and invoke it this way. we are controlling how this file gets run in this environment 
+# a filter that only runs when we run a command external to Python and invoke it this way. we are controlling how this file gets run in this environment 
 if __name__ == '__main__':
     models.initialize() 
     app.run(debug=DEBUG, port=PORT)
