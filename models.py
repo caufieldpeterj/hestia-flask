@@ -26,14 +26,57 @@ DATABASE = PostgresqlDatabase(
 
 #Extend peewees Model class and add our own logic/schema on top of it to create our DB schema
 class Homes(Model):
-    bedrooms = CharField(null=False)
+    city = CharField()
+    state = CharField()
+    bedrooms = CharField()
     bathrooms = CharField()
     sq_ft = CharField()
     price = CharField()
+    down_pmt = CharField()
+    est_mtge = IntegerField()
     created_at = DateTimeField(default=datetime.now)
     # need to specify metadata, telling peewee this is the database we're going to talk to.
     class Meta:
         database = DATABASE
+
+def seed_db():
+    data_source = [
+        {
+            'city': 'srq', 
+            'state': 'fl',
+            'bedrooms': '', 
+            'bathrooms': '', 
+            'sq_ft': '', 
+            'price':'', 
+            'down_pmt': '', 
+            'est_mtge': 20, 
+            'created_at': datetime.now
+        },
+        {
+            'city': 'hhk', 
+            'state': 'nj',
+            'bedrooms': '', 
+            'bathrooms': '', 
+            'sq_ft': '', 
+            'price':'', 
+            'down_pmt': '', 
+            'est_mtge': 20, 
+            'created_at': datetime.now
+        },
+        {
+            'city': 'boca', 
+            'state': 'fl',
+            'bedrooms': '', 
+            'bathrooms': '', 
+            'sq_ft': '', 
+            'price':'', 
+            'down_pmt': '', 
+            'est_mtge': 20, 
+            'created_at': datetime.now 
+        }
+    ]
+    for data_dict in data_source:
+        Homes.create(**data_dict)
 
 # handles intialization, connect, creation of tables, debugging statement to let us know this function fires, close connection of our database
 def initialize():
@@ -42,4 +85,5 @@ def initialize():
     # safe ensures that we only create this table if it does not already exist
     DATABASE.create_tables([Homes], safe=True)
     print('TABLES created')
+    # DATABASE.seed_db()
     DATABASE.close()

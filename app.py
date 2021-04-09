@@ -74,6 +74,10 @@ app.register_blueprint(home, url_prefix='/api/v1/homes')
 def seed(): 
     # ==========ALWAYS WRAP RETURN IN JSONIFY===============
     # web standard for sending data, front-end is expecting JSON
+    # '''
+    #     INSERT INTO homes (id, bedrooms, bathrooms, sq_ft, price, created_at)
+    #     VALUES (2, 10, 5, 6000, 500000, '2021-04-04 16:06:55.77246')
+    # '''
     print('SEEDING THE DB')
     return jsonify(what='dummy data goes here')
 
