@@ -34,7 +34,7 @@ class Homes(Model):
     price = CharField()
     down_pmt = CharField()
     est_mtge = IntegerField()
-    created_at = DateTimeField(default=datetime.now)
+    created_at = DateTimeField(default=datetime.now, null=False)
     # need to specify metadata, telling peewee this is the database we're going to talk to.
     class Meta:
         database = DATABASE
